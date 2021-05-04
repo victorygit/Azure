@@ -1,0 +1,9 @@
+{
+	"name": "vydfservice",
+	"location": "westus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d491438c-58fd-431a-b7cc-a0377b24077a",
+		"tenantId": "c0f38700-d7f7-4200-ae37-7eebf475cdc1"
+	}
+}
