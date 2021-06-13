@@ -2,7 +2,7 @@
 	"name": "SQL external_table",
 	"properties": {
 		"content": {
-			"query": "\n\nCREATE EXTERNAL TABLE lob.customer (\n\t[id] smallint,\n\t[name] varchar(8000),\n\t[etltime] datetime2(7),\n\t[city] varchar(8000)\n\t)\n\tWITH (\n\tLOCATION = 'customer',\n\tDATA_SOURCE = [lake_vyadls_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\nSELECT TOP 100 * FROM customer\nGO\n\n",
+			"query": "DROP EXTERNAL TABLE lob.customer;\n\nCREATE EXTERNAL TABLE lob.customer (\n\t[id] smallint,\n\t[name] varchar(8000),\n\t[etltime] datetime2(7),\n\t[city] varchar(8000)\n\t)\n\tWITH (\n\tLOCATION = 'customer',\n\tDATA_SOURCE = [lake_vyadls_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\nSELECT TOP 100 * FROM lob.customer\nGO\n\n",
 			"metadata": {
 				"language": "sql"
 			},
