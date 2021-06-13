@@ -2,7 +2,7 @@
 	"name": "SQL etllog_view",
 	"properties": {
 		"content": {
-			"query": "CREATE or ALTER VIEW etl.etllog_view AS \nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/etl/etllog',\n        FORMAT='DELTA'\n    ) AS [result]\n\nGo\nselect top 100 * from etl.etllog_view\n",
+			"query": "CREATE or ALTER VIEW etl.etllog_view AS \nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/etl/etl_log',\n        FORMAT='DELTA'\n    ) AS [result]\n\nGo\nselect top 100 * from etl.etllog_view\n",
 			"metadata": {
 				"language": "sql"
 			},
