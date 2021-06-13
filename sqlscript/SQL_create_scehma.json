@@ -1,0 +1,17 @@
+{
+	"name": "SQL_create_scehma",
+	"properties": {
+		"content": {
+			"query": "CREATE SCHEMA lob",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
