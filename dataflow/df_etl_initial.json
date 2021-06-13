@@ -1,0 +1,49 @@
+{
+	"name": "df_etl_initial",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage_raw",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage_raw",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "Filter2"
+				}
+			],
+			"script": "source(output(\n\t\tTARGET_SYS_ID as string,\n\t\tTARGET_TABLE_ID as string,\n\t\tSOURCE_SYS_ID as string,\n\t\tSOURCE_TABLE_ID as string,\n\t\tSEQ_NO as integer,\n\t\tLAST_READ_TIME as timestamp,\n\t\tCUR_READ_TIME as timestamp,\n\t\tETL_METHOD as string,\n\t\tETL_STATUS as string,\n\t\tLOAD_MODE as string,\n\t\tLOCK_TIME as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'raw',\n\tfolderPath: 'etl',\n\tfileName: 'table_register.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tqutoChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> source1\nsource(output(\n\t\tTARGET_SYS_ID as string,\n\t\tTARGET_TABLE_ID as string,\n\t\tSOURCE_SYS_ID as string,\n\t\tSOURCE_TABLE_ID as string,\n\t\tSEQ_NO as integer,\n\t\tLOAD_START_TIME as timestamp,\n\t\tLOAD_END_TIME as timestamp,\n\t\tLOAD_DURATION as double,\n\t\tTARGET_RECORDS as long,\n\t\tSOURCE_RECORDS as long,\n\t\tETL_MODE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'raw',\n\tfolderPath: 'etl',\n\tfileName: 'etl_log.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tqutoChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> source2\nsource1 filter(TARGET_SYS_ID =='aa') ~> Filter1\nsource2 filter(TARGET_SYS_ID =='aa') ~> Filter2\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'tableregister',\n\ttruncate:true,\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nFilter2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'etl_log',\n\ttruncate:true,\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2"
+		}
+	}
+}

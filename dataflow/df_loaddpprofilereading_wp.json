@@ -1,0 +1,32 @@
+{
+	"name": "df_loaddpprofilereading_wp",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText12",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				}
+			],
+			"script": "source(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\t{Reading Date} as string,\n\t\t{Reading Hour} as string,\n\t\tReadingValue as string,\n\t\tStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 derive(EXT_LOADDATETIME = currentDate(),\n\t\tYEAR = year(toDate({Reading Date},'yyyymmdd')),\n\t\tDATE = toInteger({Reading Date}),\n\tpartitionBy('hash', 1)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp',\n\tmergeSchema: false,\n\tautoCompact: true,\n\toptimizedWrite: true,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tServicePointID,\n\t\tSPChannel,\n\t\tMeterBadge,\n\t\tRecordID,\n\t\tSPCUOM,\n\t\tSPCPowerflowdirection,\n\t\tSPCIntervalLength,\n\t\tSPCTimeZone,\n\t\tReading_Date = {Reading Date},\n\t\tReading_Hour = {Reading Hour},\n\t\tReadingValue,\n\t\tStatus,\n\t\tEXT_LOADDATETIME,\n\t\tYEAR,\n\t\tDATE\n\t),\n\tpartitionBy('key',\n\t\t0,\n\t\tDATE\n\t)) ~> sink1"
+		}
+	}
+}

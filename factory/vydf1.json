@@ -1,0 +1,9 @@
+{
+	"name": "vydf1",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c7e8e3e3-1109-4099-b86d-91be6712d539",
+		"tenantId": "377675c1-ec08-4e0a-872b-67dbed5d26e7"
+	}
+}

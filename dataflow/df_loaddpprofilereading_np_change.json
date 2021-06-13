@@ -1,0 +1,51 @@
+{
+	"name": "df_loaddpprofilereading_np_change",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2020",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "Lookup1"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "Filter1"
+				}
+			],
+			"script": "source(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\t{Reading Date} as string,\n\t\t{Reading Hour} as string,\n\t\tReadingValue as string,\n\t\tStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\tReading_Date as string,\n\t\tReading_Hour as string,\n\t\tReadingValue as string,\n\t\tStatus as string,\n\t\tEXT_LOADDATETIME as date,\n\t\tYEAR as integer,\n\t\tDATE as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp') ~> source2\nsource1 derive(EXT_LOADDATETIME = currentDate(),\n\t\tYEAR = year(toDate({Reading Date}, 'yyyymmdd')),\n\t\tDATE = isInteger({Reading Date})) ~> DerivedColumn1\nLookup1 alterRow(updateIf(iif(isNull(source2@ServicePointID),false(),true()))) ~> AlterRow1\nDerivedColumn1, source2 lookup(source1@ServicePointID == source2@ServicePointID\n\t&& source1@SPChannel == source2@SPChannel\n\t&& {Reading Date} == Reading_Date\n\t&& {Reading Hour} == Reading_Hour,\n\tmultiple: true,\n\tbroadcast: 'auto')~> Lookup1\nAlterRow1 select(mapColumn(\n\t\tServicePointID = source1@ServicePointID,\n\t\tSPChannel = source1@SPChannel,\n\t\tMeterBadge = source1@MeterBadge,\n\t\tRecordID = source1@RecordID,\n\t\tSPCUOM = source1@SPCUOM,\n\t\tSPCPowerflowdirection = source1@SPCPowerflowdirection,\n\t\tSPCIntervalLength = source1@SPCIntervalLength,\n\t\tSPCTimeZone = source1@SPCTimeZone,\n\t\t{Reading Date},\n\t\t{Reading Hour},\n\t\tReadingValue = source1@ReadingValue,\n\t\tStatus = source1@Status,\n\t\tEXT_LOADDATETIME = DerivedColumn1@EXT_LOADDATETIME\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nsource2 filter(DATE == 20200502) ~> Filter1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp',\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ServicePointID','SPChannel','Reading_Date','Reading_Hour'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tServicePointID,\n\t\tSPChannel,\n\t\tMeterBadge,\n\t\tRecordID,\n\t\tSPCUOM,\n\t\tSPCPowerflowdirection,\n\t\tSPCIntervalLength,\n\t\tSPCTimeZone,\n\t\tReading_Date = {Reading Date},\n\t\tReading_Hour = {Reading Hour},\n\t\tReadingValue,\n\t\tStatus,\n\t\tEXT_LOADDATETIME\n\t)) ~> sink1"
+		}
+	}
+}

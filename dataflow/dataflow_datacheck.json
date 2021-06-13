@@ -1,0 +1,34 @@
+{
+	"name": "dataflow_datacheck",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceregister"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceetllog"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tTARGET_SYS_ID as string,\n\t\tTARGET_TABLE_ID as string,\n\t\tSOURCE_SYS_ID as string,\n\t\tSOURCE_TABLE_ID as string,\n\t\tSEQ_NO as integer,\n\t\tLAST_READ_TIME as timestamp,\n\t\tCUR_READ_TIME as timestamp,\n\t\tETL_METHOD as string,\n\t\tETL_STATUS as string,\n\t\tLOAD_MODE as string,\n\t\tLOCK_TIME as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'tableregister') ~> sourceregister\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'etl_log') ~> sourceetllog\nsourceregister sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> sink1\nsourceetllog sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> sink2"
+		}
+	}
+}

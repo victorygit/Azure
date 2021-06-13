@@ -1,0 +1,64 @@
+{
+	"name": "df_common_start",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage_raw",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourcenew"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkinser"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkupdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "ConditionalSplit1"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "DerivedColumn2"
+				},
+				{
+					"name": "AlterRow2"
+				},
+				{
+					"name": "Join1"
+				}
+			],
+			"script": "parameters{\n\ttarget_table_id as string ('TT'),\n\tsource_table_id as string ('ST'),\n\tet_status as string ('S')\n}\nsource(output(\n\t\tTARGET_SYS_ID as string,\n\t\tTARGET_TABLE_ID as string,\n\t\tSOURCE_SYS_ID as string,\n\t\tSOURCE_TABLE_ID as string,\n\t\tSEQ_NO as integer,\n\t\tLAST_READ_TIME as timestamp,\n\t\tCUR_READ_TIME as timestamp,\n\t\tETL_METHOD as string,\n\t\tETL_STATUS as string,\n\t\tLOAD_MODE as string,\n\t\tLOCK_TIME as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'tableregister') ~> source1\nsource(output(\n\t\t{Key } as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'raw',\n\tfolderPath: 'etl',\n\tfileName: 'new.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tqutoChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> sourcenew\nsource1 filter(TARGET_TABLE_ID =='TT') ~> Filter1\nFilter1 split(isNull(TARGET_TABLE_ID),\n\tdisjoint: false) ~> ConditionalSplit1@(insert, update)\nDerivedColumn1 alterRow(insertIf(true())) ~> AlterRow1\nJoin1 derive(TARGET_TABLE_ID = $target_table_id,\n\t\tSOURCE_TABLE_ID = $source_table_id,\n\t\tSEQ_NO = 1,\n\t\tETL_STATUS = $et_status) ~> DerivedColumn1\nConditionalSplit1@update derive(ETL_STATUS = $et_status) ~> DerivedColumn2\nDerivedColumn2 alterRow(updateIf(true())) ~> AlterRow2\nConditionalSplit1@insert, sourcenew join(TARGET_SYS_ID == {Key },\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> Join1\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'tableregister',\n\tmergeSchema: false,\n\tautoCompact: true,\n\toptimizedWrite: true,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tTARGET_SYS_ID,\n\t\tTARGET_TABLE_ID,\n\t\tSOURCE_SYS_ID,\n\t\tSOURCE_TABLE_ID,\n\t\tSEQ_NO,\n\t\tLAST_READ_TIME,\n\t\tCUR_READ_TIME,\n\t\tETL_METHOD,\n\t\tETL_STATUS,\n\t\tLOAD_MODE,\n\t\tLOCK_TIME\n\t)) ~> sinkinser\nAlterRow2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'etl',\n\tfolderPath: 'tableregister',\n\tmergeSchema: false,\n\tautoCompact: true,\n\toptimizedWrite: true,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['TARGET_TABLE_ID'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkupdate"
+		}
+	}
+}

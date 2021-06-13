@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "DelimitedText2020_new",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage_raw",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "dpprofilereading2021-05-01.csv",
+				"fileName": "dpprofilereading2020_new.csv",
 				"folderPath": "meter_reading/dpprofilereading",
 				"fileSystem": "raw"
 			},

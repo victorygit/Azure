@@ -1,0 +1,36 @@
+{
+	"name": "pl_ind_dpreading_np_change",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_loaddpprofilereading_np_change",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [
+			"1st file BP"
+		],
+		"lastPublishTime": "2021-06-09T23:51:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

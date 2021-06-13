@@ -1,0 +1,35 @@
+{
+	"name": "renmove_data",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"script": "source(output(\n\t\tServicePointID as integer,\n\t\tSPChannel as short,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as short,\n\t\tSPCTimeZone as string,\n\t\tReading_Date as string,\n\t\tReading_Hour as short,\n\t\tReadingValue as double,\n\t\tStatus as string,\n\t\tEXT_LOADDATETIME as date,\n\t\tYEAR as integer,\n\t\tDATE as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp') ~> source1\nsource1 filter(YEAR < 2021) ~> Filter1\nFilter1 alterRow(deleteIf(true())) ~> AlterRow1\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp',\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:true,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:false,\n\tkeys:['ServicePointID','Reading_Date','Reading_Hour'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

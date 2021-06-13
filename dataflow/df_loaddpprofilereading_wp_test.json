@@ -1,0 +1,45 @@
+{
+	"name": "df_loaddpprofilereading_wp_test",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2020_new",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "Join1"
+				}
+			],
+			"script": "source(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\t{Reading Date} as string,\n\t\t{Reading Hour} as string,\n\t\tReadingValue as string,\n\t\tStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\tReading_Date as string,\n\t\tReading_Hour as string,\n\t\tReadingValue as string,\n\t\tStatus as string,\n\t\tEXT_LOADDATETIME as date,\n\t\tYEAR as integer,\n\t\tDATE as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading/dpprofilereadingwp') ~> source2\nsource1 derive(EXT_LOADDATETIME = currentDate(),\n\t\tYEAR = year(toDate({Reading Date}, 'yyyymmdd')),\n\t\tDATE = toInteger({Reading Date})) ~> DerivedColumn1\nsource2 filter(YEAR == 2020) ~> Filter1\nDerivedColumn1, Filter1 join(source1@ServicePointID == source2@ServicePointID\n\t&& source1@SPChannel == source2@SPChannel\n\t&& {Reading Date} == Reading_Date\n\t&& {Reading Hour} == Reading_Hour,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tcontainer: 'lake',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tqutoChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tpartitionFileNames:['test.csv'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tServicePointID = source1@ServicePointID,\n\t\tSPChannel = source1@SPChannel,\n\t\tMeterBadge = source1@MeterBadge,\n\t\tRecordID = source1@RecordID,\n\t\tSPCUOM = source1@SPCUOM,\n\t\tSPCPowerflowdirection = source1@SPCPowerflowdirection,\n\t\tSPCIntervalLength = source1@SPCIntervalLength,\n\t\tSPCTimeZone = source1@SPCTimeZone,\n\t\t{Reading Date},\n\t\t{Reading Hour},\n\t\tReadingValue = source1@ReadingValue,\n\t\tStatus = source1@Status,\n\t\tEXT_LOADDATETIME = DerivedColumn1@EXT_LOADDATETIME,\n\t\tYEAR = DerivedColumn1@YEAR,\n\t\tDATE = DerivedColumn1@DATE,\n\t\tServicePointID = source2@ServicePointID,\n\t\tSPChannel = source2@SPChannel,\n\t\tMeterBadge = source2@MeterBadge,\n\t\tRecordID = source2@RecordID,\n\t\tSPCUOM = source2@SPCUOM,\n\t\tSPCPowerflowdirection = source2@SPCPowerflowdirection,\n\t\tSPCIntervalLength = source2@SPCIntervalLength,\n\t\tSPCTimeZone = source2@SPCTimeZone,\n\t\tReading_Date,\n\t\tReading_Hour,\n\t\tReadingValue = source2@ReadingValue,\n\t\tStatus = source2@Status,\n\t\tEXT_LOADDATETIME = source2@EXT_LOADDATETIME,\n\t\tYEAR = source2@YEAR,\n\t\tDATE = source2@DATE\n\t),\n\tpartitionBy('hash', 1)) ~> sink2"
+		}
+	}
+}
