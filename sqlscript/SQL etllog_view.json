@@ -1,0 +1,17 @@
+{
+	"name": "SQL etllog_view",
+	"properties": {
+		"content": {
+			"query": "CREATE or ALTER VIEW etl.etllog_view AS \nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/etl/etllog',\n        FORMAT='DELTA'\n    ) AS [result]\n\nGo\nselect top 100 * from etl.etllog_view\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
