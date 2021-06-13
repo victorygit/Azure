@@ -1,0 +1,17 @@
+{
+	"name": "SQL change_collate",
+	"properties": {
+		"content": {
+			"query": "ALTER DATABASE mysql \n    COLLATE Latin1_General_100_BIN2_UTF8;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
