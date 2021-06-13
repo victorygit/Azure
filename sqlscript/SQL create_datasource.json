@@ -2,13 +2,13 @@
 	"name": "SQL create_datasource",
 	"properties": {
 		"content": {
-			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = Parquet)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'lake_vyadls_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [lake_vyadls_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION   = 'https://vyadls.dfs.core.windows.net/lake', \n\t)\nGo",
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = DELTA)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'lake_vyadls_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [lake_vyadls_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION   = 'https://vyadls.dfs.core.windows.net/lake', \n\t)\nGo",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
 				"poolName": "Built-in",
-				"databaseName": "master"
+				"databaseName": "mysql"
 			},
 			"resultLimit": 5000
 		},
