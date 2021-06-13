@@ -1,0 +1,17 @@
+{
+	"name": "SQL create_view",
+	"properties": {
+		"content": {
+			"query": "CREATE or ALTER VIEW lob.customer_view AS \nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/lake/customer',\n        FORMAT='DELTA'\n    ) AS [result]\n\nGo\nselect top 100 * from lob.customer_view \n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

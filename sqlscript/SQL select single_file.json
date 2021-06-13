@@ -1,0 +1,17 @@
+{
+	"name": "SQL select single_file",
+	"properties": {
+		"content": {
+			"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/lake/customer/part-00000-1cd40d7c-798a-4808-bacc-d0536e02c47d-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
