@@ -1,0 +1,17 @@
+{
+	"name": "SQL new_external_table",
+	"properties": {
+		"content": {
+			"query": " CREATE EXTERNAL TABLE dbo.deltaCetasTest\n WITH (\n     LOCATION = 'customer2/',\n     DATA_SOURCE = [lake_vyadls_dfs_core_windows_net],  \n     FILE_FORMAT = snappy\n )  \n AS\n SELECT *\n FROM OPENROWSET(\n     BULK 'https://vyadls.dfs.core.windows.net/lake/customer',\n     FORMAT = 'Delta') as f;\n    \n SELECT * FROM dbo.deltaCetasTest;\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
