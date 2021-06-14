@@ -47,9 +47,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup_control').output.value.table",
+						"value": "@activity('Lookup_control').output.value",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "pl_ind_dbcopy",
@@ -64,7 +65,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"tablename": {
-										"value": "@activity('Lookup_control').output.value.table",
+										"value": "@item().table",
 										"type": "Expression"
 									}
 								}
