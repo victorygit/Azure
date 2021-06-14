@@ -5,12 +5,22 @@
 			"referenceName": "azureparquetservice",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileSystem": "lake"
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": "dbcopy",
+				"fileSystem": "raw"
 			},
 			"compressionCodec": "snappy"
 		},
