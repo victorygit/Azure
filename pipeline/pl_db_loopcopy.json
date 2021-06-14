@@ -51,6 +51,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
+					"batchCount": 10,
 					"activities": [
 						{
 							"name": "pl_ind_dbcopy",
