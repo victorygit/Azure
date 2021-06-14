@@ -18,7 +18,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@if(empty(pipeline().parameters.watermarkfield), concat('select * from dbo.',pipeline().parameters.tablename), concat('select * from dbo.',pipeline().parameters.tablename,'where ',pipeline().parameters.watermarkfield,'>=''20210301'''))",
+							"value": "@if(empty(pipeline().parameters.watermarkfield), concat('select * from dbo.',pipeline().parameters.tablename), concat('select * from dbo.',pipeline().parameters.tablename, ' where ',pipeline().parameters.watermarkfield,'>=''20210301'''))",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
