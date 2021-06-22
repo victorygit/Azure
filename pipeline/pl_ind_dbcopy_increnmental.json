@@ -1,0 +1,78 @@
+{
+	"name": "pl_ind_dbcopy_increnmental",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy dbfile",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@if(empty(pipeline().parameters.watermarkfield), concat('select * from dbo.',pipeline().parameters.tablename), concat('select * from dbo.',pipeline().parameters.tablename, ' where ',pipeline().parameters.watermarkfield,'>=''2021-03-01'''))",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlData",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet1",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": {
+								"value": "@concat(pipeline().parameters.tablename,'_delta.parquet')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"tablename": {
+				"type": "string",
+				"defaultValue": "sales"
+			},
+			"watermarkfield": {
+				"type": "string",
+				"defaultValue": "calday"
+			}
+		},
+		"annotations": []
+	}
+}
