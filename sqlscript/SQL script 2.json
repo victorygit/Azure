@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [id]\n,[name]\n,[etltime]\n,[city]\n FROM [lob].[customer]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

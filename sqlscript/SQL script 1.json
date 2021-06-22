@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "create external data source DeltaLakeStorage\nwith ( location = 'https://vyadls.dfs.core.windows.net/lake' );\ngo\n\nselect top 10 *\nfrom openrowset(\n        bulk 'customer',\n        data_source = 'DeltaLakeStorage',\n        format = 'delta'\n    ) as rows\n\n\n    select top 10 *\nfrom openrowset(\n    bulk 'https://vyadls.dfs.core.windows.net/lake/customer',\n    format = 'delta') as rows",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
