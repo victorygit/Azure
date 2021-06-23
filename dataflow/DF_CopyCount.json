@@ -1,0 +1,35 @@
+{
+	"name": "DF_CopyCount",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "LS_ABLB_Output",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tServicePointID as string,\n\t\tSPChannel as string,\n\t\tMeterBadge as string,\n\t\tRecordID as string,\n\t\tSPCUOM as string,\n\t\tSPCPowerflowdirection as string,\n\t\tSPCIntervalLength as string,\n\t\tSPCTimeZone as string,\n\t\t{Reading Date} as string,\n\t\t{Reading Hour} as string,\n\t\tReadingValue as string,\n\t\tStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'meter_reading',\n\ttruncate:true,\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tcontainer: 'raw',\n\tfolderPath: 'ourtput',\n\ttruncate: true,\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tqutoChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2"
+		}
+	}
+}
