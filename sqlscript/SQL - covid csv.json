@@ -1,5 +1,5 @@
 {
-	"name": "SQL script 4",
+	"name": "SQL - covid csv",
 	"properties": {
 		"content": {
 			"query": "-- This is auto-generated code\nSELECT\n    count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/raw/covid/owid-covid-data-new.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0',\n        HEADER_ROW = TRUE\n    ) AS [result]\nwhere location = 'Canada'",
