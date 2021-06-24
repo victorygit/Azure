@@ -2,13 +2,13 @@
 	"name": "SQL - covid csv",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\nSELECT\n    count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/raw/covid/owid-covid-data-new.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0',\n        HEADER_ROW = TRUE\n    ) AS [result]\nwhere location = 'Canada'",
+			"query": "\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'lake_vyadls_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [lake_vyadls_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION   = 'https://vyadls.dfs.core.windows.net/lake', \n\t)\nGo\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseDeltaFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseDeltaFormat] \n\tWITH ( FORMAT_TYPE = DELTA)\nGO\n\nCREATE EXTERNAL TABLE dbo.covidimport\n WITH (\n     LOCATION = 'covid_external',\n     DATA_SOURCE = [lake_vyadls_dfs_core_windows_net],  \n     FILE_FORMAT = [SynapseParquetFormat] \n )  \n AS\n SELECT *\n FROM OPENROWSET(\n     BULK 'https://vyadls.dfs.core.windows.net/lake/covid',\n     FORMAT = 'Delta')  as f;\n    \n\n\nCREATE or ALTER VIEW dbo.covid_view AS \nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://vyadls.dfs.core.windows.net/lake/covid',\n        FORMAT='DELTA'\n    ) AS [result]\n\nGo\n\nselect * from dbo.covid_view",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
 				"poolName": "Built-in",
-				"databaseName": "master"
+				"databaseName": "mysql"
 			},
 			"resultLimit": 5000
 		},
