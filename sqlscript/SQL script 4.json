@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 4",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'lake_vyadls_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [lake_vyadls_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION   = 'https://vyadls.dfs.core.windows.net/lake', \n\t)\nGo\n\nCREATE EXTERNAL TABLE covid (\n\t[iso_code] varchar(8000),\n\t[continent] varchar(8000),\n\t[location] varchar(8000),\n\t[date] varchar(8000),\n\t[total_cases] varchar(8000),\n\t[new_cases] varchar(8000),\n\t[new_cases_smoothed] varchar(8000),\n\t[total_deaths] varchar(8000),\n\t[new_deaths] varchar(8000),\n\t[new_deaths_smoothed] varchar(8000),\n\t[total_cases_per_million] varchar(8000),\n\t[new_cases_per_million] varchar(8000),\n\t[new_cases_smoothed_per_million] varchar(8000),\n\t[total_deaths_per_million] varchar(8000),\n\t[new_deaths_per_million] varchar(8000),\n\t[new_deaths_smoothed_per_million] varchar(8000),\n\t[reproduction_rate] varchar(8000),\n\t[icu_patients] varchar(8000),\n\t[icu_patients_per_million] varchar(8000),\n\t[hosp_patients] varchar(8000),\n\t[hosp_patients_per_million] varchar(8000),\n\t[weekly_icu_admissions] varchar(8000),\n\t[weekly_icu_admissions_per_million] varchar(8000),\n\t[weekly_hosp_admissions] varchar(8000),\n\t[weekly_hosp_admissions_per_million] varchar(8000),\n\t[new_tests] varchar(8000),\n\t[total_tests] varchar(8000),\n\t[total_tests_per_thousand] varchar(8000),\n\t[new_tests_per_thousand] varchar(8000),\n\t[new_tests_smoothed] varchar(8000),\n\t[new_tests_smoothed_per_thousand] varchar(8000),\n\t[positive_rate] varchar(8000),\n\t[tests_per_case] varchar(8000),\n\t[tests_units] varchar(8000),\n\t[total_vaccinations] varchar(8000),\n\t[people_vaccinated] varchar(8000),\n\t[people_fully_vaccinated] varchar(8000),\n\t[new_vaccinations] varchar(8000),\n\t[new_vaccinations_smoothed] varchar(8000),\n\t[total_vaccinations_per_hundred] varchar(8000),\n\t[people_vaccinated_per_hundred] varchar(8000),\n\t[people_fully_vaccinated_per_hundred] varchar(8000),\n\t[new_vaccinations_smoothed_per_million] varchar(8000),\n\t[stringency_index] varchar(8000),\n\t[population] varchar(8000),\n\t[population_density] varchar(8000),\n\t[median_age] varchar(8000),\n\t[aged_65_older] varchar(8000),\n\t[aged_70_older] varchar(8000),\n\t[gdp_per_capita] varchar(8000),\n\t[extreme_poverty] varchar(8000),\n\t[cardiovasc_death_rate] varchar(8000),\n\t[diabetes_prevalence] varchar(8000),\n\t[female_smokers] varchar(8000),\n\t[male_smokers] varchar(8000),\n\t[handwashing_facilities] varchar(8000),\n\t[hospital_beds_per_thousand] varchar(8000),\n\t[life_expectancy] varchar(8000),\n\t[human_development_index] varchar(8000),\n\t[excess_mortality] varchar(8000)\n\t)\n\tWITH (\n\tLOCATION = 'covid/part-00000-9753a517-3a3f-4b5a-9118-07fdf1b21645-c000.snappy.parquet',\n\tDATA_SOURCE = [lake_vyadls_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\nSELECT TOP 100 * FROM covid\nGO\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "mysql"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
