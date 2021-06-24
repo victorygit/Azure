@@ -1,0 +1,28 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedTex_covid",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"script": "source(output(\n\t\tiso_code as string,\n\t\tcontinent as string,\n\t\tlocation as string,\n\t\tdate as string,\n\t\ttotal_cases as string,\n\t\tnew_cases as string,\n\t\tnew_cases_smoothed as string,\n\t\ttotal_deaths as string,\n\t\tnew_deaths as string,\n\t\tnew_deaths_smoothed as string,\n\t\ttotal_cases_per_million as string,\n\t\tnew_cases_per_million as string,\n\t\tnew_cases_smoothed_per_million as string,\n\t\ttotal_deaths_per_million as string,\n\t\tnew_deaths_per_million as string,\n\t\tnew_deaths_smoothed_per_million as string,\n\t\treproduction_rate as string,\n\t\ticu_patients as string,\n\t\ticu_patients_per_million as string,\n\t\thosp_patients as string,\n\t\thosp_patients_per_million as string,\n\t\tweekly_icu_admissions as string,\n\t\tweekly_icu_admissions_per_million as string,\n\t\tweekly_hosp_admissions as string,\n\t\tweekly_hosp_admissions_per_million as string,\n\t\tnew_tests as string,\n\t\ttotal_tests as string,\n\t\ttotal_tests_per_thousand as string,\n\t\tnew_tests_per_thousand as string,\n\t\tnew_tests_smoothed as string,\n\t\tnew_tests_smoothed_per_thousand as string,\n\t\tpositive_rate as string,\n\t\ttests_per_case as string,\n\t\ttests_units as string,\n\t\ttotal_vaccinations as string,\n\t\tpeople_vaccinated as string,\n\t\tpeople_fully_vaccinated as string,\n\t\tnew_vaccinations as string,\n\t\tnew_vaccinations_smoothed as string,\n\t\ttotal_vaccinations_per_hundred as string,\n\t\tpeople_vaccinated_per_hundred as string,\n\t\tpeople_fully_vaccinated_per_hundred as string,\n\t\tnew_vaccinations_smoothed_per_million as string,\n\t\tstringency_index as string,\n\t\tpopulation as string,\n\t\tpopulation_density as string,\n\t\tmedian_age as string,\n\t\taged_65_older as string,\n\t\taged_70_older as string,\n\t\tgdp_per_capita as string,\n\t\textreme_poverty as string,\n\t\tcardiovasc_death_rate as string,\n\t\tdiabetes_prevalence as string,\n\t\tfemale_smokers as string,\n\t\tmale_smokers as string,\n\t\thandwashing_facilities as string,\n\t\thospital_beds_per_thousand as string,\n\t\tlife_expectancy as string,\n\t\thuman_development_index as string,\n\t\texcess_mortality as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delta',\n\tcontainer: 'lake',\n\tfolderPath: 'covid',\n\tmergeSchema: false,\n\tautoCompact: false,\n\toptimizedWrite: false,\n\tvacuum: 0,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
